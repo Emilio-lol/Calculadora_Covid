@@ -6,8 +6,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -15,11 +16,14 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ConstraintLayout main;
     private RadioButton gMujer, gHombre, pBajo, pNormal, pSobre, pObe;
     private Switch paHiper, paDiab, paEpoc, paRen, paInmu;
-    private TextView Riesgo, msg;
+    private TextView Riesgo, msg, etEdad, etDiabetes, etHiper, etEPOC, etERC, etInmuno, etSobrepeso, etObesidad, etGenero;
     private Spinner Edad;
-    String sEdad;
+    private RadioGroup grSexo, grPeso;
+    private int cont = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,35 +40,34 @@ public class MainActivity extends AppCompatActivity {
         paEpoc = (Switch) findViewById(R.id.swtEpoc);
         paRen = (Switch) findViewById(R.id.swtRenal);
         paInmu = (Switch) findViewById(R.id.swtInmuno);
+        etEdad = (TextView) findViewById(R.id.paEdad);
+        etSobrepeso = (TextView) findViewById(R.id.txvSobrepeso);
+        etObesidad = (TextView) findViewById(R.id.paObesidad);
+        etDiabetes = (TextView) findViewById(R.id.txvDiabetes2);
+        etHiper = (TextView) findViewById(R.id.txvHiper2);
+        etEPOC = (TextView) findViewById(R.id.txvEPOC);
+        etERC = (TextView) findViewById(R.id.txvERC);
+        etInmuno = (TextView) findViewById(R.id.txvInmuno);
+        etGenero = (TextView) findViewById(R.id.paGenero2);
         Riesgo = (TextView) findViewById(R.id.txvRiesgo);
         msg = (TextView) findViewById(R.id.txtMsg);
+        grSexo = (RadioGroup) findViewById(R.id.rdgSexo);
+        grPeso = (RadioGroup) findViewById(R.id.rdgPeso);
         Edad = (Spinner) findViewById(R.id.spnEdad);
+
         Edad.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                sEdad = (String) Edad.getSelectedItem();
-                if(gMujer.isChecked() && Integer.parseInt(sEdad) <= 53) {
-                    Riesgo.setText("0");
+                Riesgo.setText("0");
+                cont=0;
+                check();
+                checkPadecimientos();
+                if(cont > 2){
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                    msg.setText("Riesgo alto para cuadro grave COVID-19");
+                }else{
                     msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
                     msg.setText("Riesgo medio para cuadro grave COVID-19");
-                }else{
-                    if(gMujer.isChecked() && Integer.parseInt(sEdad) >= 54){
-                        Riesgo.setText("1");
-                        msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
-                        msg.setText("Riesgo alto para cuadro grave COVID-19");
-                    }
-                }
-
-                if(gHombre.isChecked() && Integer.parseInt(sEdad) <= 45) {
-                    Riesgo.setText("1");
-                    msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
-                    msg.setText("Riesgo medio para cuadro grave COVID-19");
-                }else{
-                    if(gHombre.isChecked() && Integer.parseInt(sEdad) >= 46){
-                        Riesgo.setText("2");
-                        msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
-                        msg.setText("Riesgo alto para cuadro grave COVID-19");
-                    }
                 }
             }
 
@@ -73,116 +76,311 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        grSexo.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Riesgo.setText("0");
+                cont=0;
+                check();
+                checkPadecimientos();
+                if(cont > 2){
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                    msg.setText("Riesgo alto para cuadro grave COVID-19");
+                }else{
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                    msg.setText("Riesgo medio para cuadro grave COVID-19");
+                }
+            }
+        });
+        grPeso.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Riesgo.setText("0");
+                cont=0;
+                check();
+                checkPadecimientos();
+                if(cont > 2){
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                    msg.setText("Riesgo alto para cuadro grave COVID-19");
+                }else{
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                    msg.setText("Riesgo medio para cuadro grave COVID-19");
+                }
+            }
+        });
+
+        paDiab.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(paDiab.isChecked()){
+                    aumentar();
+                    cont++;
+                    etDiabetes.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                }else{
+                    if(!paDiab.isChecked()){
+                        disminuir();
+                        cont--;
+                        etDiabetes.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                    }
+                }
+                if(cont > 2){
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                    msg.setText("Riesgo alto para cuadro grave COVID-19");
+                }else{
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                    msg.setText("Riesgo medio para cuadro grave COVID-19");
+                }
+            }
+        });
+
+        paHiper.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(paHiper.isChecked()){
+                    aumentar();
+                    cont++;
+                    etHiper.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                }else{
+                    if(!paHiper.isChecked()){
+                        disminuir();
+                        cont--;
+                        etHiper.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                    }
+                }
+                if(cont > 2){
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                    msg.setText("Riesgo alto para cuadro grave COVID-19");
+                }else{
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                    msg.setText("Riesgo medio para cuadro grave COVID-19");
+                }
+            }
+        });
+        paEpoc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(paEpoc.isChecked()){
+                    aumentar();
+                    cont++;
+                    etEPOC.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                }else{
+                    if(!paEpoc.isChecked()){
+                        disminuir();
+                        cont--;
+                        etEPOC.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                    }
+                }
+                if(cont > 2){
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                    msg.setText("Riesgo alto para cuadro grave COVID-19");
+                }else{
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                    msg.setText("Riesgo medio para cuadro grave COVID-19");
+                }
+            }
+        });
+        paRen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(paRen.isChecked()){
+                    aumentar();
+                    cont++;
+                    etERC.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                }else{
+                    if(!paRen.isChecked()){
+                        disminuir();
+                        cont--;
+                        etERC.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                    }
+                }
+                if(cont > 2){
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                    msg.setText("Riesgo alto para cuadro grave COVID-19");
+                }else{
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                    msg.setText("Riesgo medio para cuadro grave COVID-19");
+                }
+            }
+        });
+
+        paInmu.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(paInmu.isChecked()){
+                    aumentar();
+                    cont++;
+                    etInmuno.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                }else{
+                    if(!paInmu.isChecked()){
+                        disminuir();
+                        cont--;
+                        etInmuno.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                    }
+                }
+                if(cont > 2){
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                    msg.setText("Riesgo alto para cuadro grave COVID-19");
+                }else{
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                    msg.setText("Riesgo medio para cuadro grave COVID-19");
+                }
+            }
+        });
     }
 
-    public void checkGenero(View view){
+    public void check(){
+        int saveEdad = Integer.parseInt((String) Edad.getSelectedItem());
         if(gHombre.isChecked()){
-            Riesgo.setText("1");
+            aumentar();
+            etGenero.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
             msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
             msg.setText("Riesgo medio para cuadro grave COVID-19");
-
-        }else{
-            if(gMujer.isChecked()){
-                Riesgo.setText("0");
+            if(saveEdad <= 45){
+                etEdad.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
                 msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
                 msg.setText("Riesgo medio para cuadro grave COVID-19");
+                if(pBajo.isChecked() || pNormal.isChecked()){
+                    etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                    etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                    msg.setText("Riesgo medio para cuadro grave COVID-19");
+                }else{
+                    if(pSobre.isChecked() || pObe.isChecked()){
+                        aumentar();
+                        msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                        msg.setText("Riesgo medio para cuadro grave COVID-19");
+                        if(pSobre.isChecked()){
+                            etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                            etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                        }else{
+                            if(pObe.isChecked()){
+                                etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                                etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                            }
+                        }
+                    }
+                }
+            }else{
+                if(saveEdad >= 46){
+                    aumentar();
+                    etEdad.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                    msg.setText("Riesgo alto para cuadro grave COVID-19");
+                    if(pBajo.isChecked() || pNormal.isChecked()){
+                        etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                        etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                        msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                        msg.setText("Riesgo alto para cuadro grave COVID-19");
+                    }else{
+                        if(pSobre.isChecked() || pObe.isChecked()){
+                            aumentar();
+                            msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                            msg.setText("Riesgo alto para cuadro grave COVID-19");
+                            if(pSobre.isChecked()){
+                                etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                                etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                            }else{
+                                if(pObe.isChecked()){
+                                    etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                                    etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if(gMujer.isChecked()){
+            etGenero.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+            msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+            msg.setText("Riesgo medio para cuadro grave COVID-19");
+            if(Integer.parseInt((String) Riesgo.getText()) != 0){
+                disminuir();
+            }else{
+                if(saveEdad <= 53){
+                    etEdad.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                    msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                    msg.setText("Riesgo medio para cuadro grave COVID-19");
+                    if(pBajo.isChecked() || pNormal.isChecked()){
+                        etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                        etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                        msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                        msg.setText("Riesgo medio para cuadro grave COVID-19");
+                    }else{
+                        if(pSobre.isChecked() || pObe.isChecked()){
+                            aumentar();
+                            msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
+                            msg.setText("Riesgo medio para cuadro grave COVID-19");
+                            if(pSobre.isChecked()){
+                                etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                                etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                            }else{
+                                if(pObe.isChecked()){
+                                    etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                                    etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    if(saveEdad >= 54){
+                        aumentar();
+                        etEdad.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                        msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                        msg.setText("Riesgo alto para cuadro grave COVID-19");
+                        if(pBajo.isChecked() || pNormal.isChecked()){
+                            etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                            etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                            msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                            msg.setText("Riesgo alto para cuadro grave COVID-19");
+                        }else{
+                            if(pSobre.isChecked() || pObe.isChecked()){
+                                aumentar();
+                                msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
+                                msg.setText("Riesgo alto para cuadro grave COVID-19");
+                                if(pSobre.isChecked()){
+                                    etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                                    etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                                }else{
+                                    if(pObe.isChecked()){
+                                        etObesidad.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+                                        etSobrepeso.setBackground(getResources().getDrawable(R.drawable.etiqueta_pade));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
-    public void checkPeso(View view){
-        if(Integer.parseInt(sEdad) >= 54 && gMujer.isChecked() && pSobre.isChecked() || Integer.parseInt(sEdad) >= 54 && gMujer.isChecked() && pObe.isChecked()){
-            Riesgo.setText("2");
-            msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
-            msg.setText("Riesgo alto para cuadro grave COVID-19");
-        }
-
-        if(Integer.parseInt(sEdad) >= 54 && gMujer.isChecked() && pBajo.isChecked() || Integer.parseInt(sEdad) >= 54 && gMujer.isChecked() && pNormal.isChecked()){
-            Riesgo.setText("1");
-            msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
-            msg.setText("Riesgo alto para cuadro grave COVID-19");
-        }
-
-        if(Integer.parseInt(sEdad) <= 53 && gMujer.isChecked() && pSobre.isChecked() || Integer.parseInt(sEdad) <= 53 && gMujer.isChecked() && pObe.isChecked()){
-            Riesgo.setText("1");
-            msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
-            msg.setText("Riesgo medio para cuadro grave COVID-19");
-        }
-
-        if(Integer.parseInt(sEdad) <= 53 && gMujer.isChecked() && pBajo.isChecked() || Integer.parseInt(sEdad) <= 53 && gMujer.isChecked() && pNormal.isChecked()){
-            Riesgo.setText("0");
-            msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
-            msg.setText("Riesgo medio para cuadro grave COVID-19");
-        }
-
-        if(Integer.parseInt(sEdad) >= 46 && gHombre.isChecked() && pSobre.isChecked() || Integer.parseInt(sEdad) >= 46 && gHombre.isChecked() && pObe.isChecked()){
-            Riesgo.setText("3");
-            msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
-            msg.setText("Riesgo alto para cuadro grave COVID-19");
-        }
-
-        if(Integer.parseInt(sEdad) >= 46 && gHombre.isChecked() && pBajo.isChecked() || Integer.parseInt(sEdad) >= 46 && gHombre.isChecked() && pNormal.isChecked()){
-            Riesgo.setText("2");
-            msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
-            msg.setText("Riesgo alto para cuadro grave COVID-19");
-        }
-
-        if(Integer.parseInt(sEdad) <= 45 && gHombre.isChecked() && pSobre.isChecked() || Integer.parseInt(sEdad) <= 45 && gHombre.isChecked() && pObe.isChecked()){
-            Riesgo.setText("2");
-            msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
-            msg.setText("Riesgo medio para cuadro grave COVID-19");
-        }
-
-        if(Integer.parseInt(sEdad) <= 45 && gHombre.isChecked() && pBajo.isChecked() || Integer.parseInt(sEdad) <= 45 && gHombre.isChecked() && pNormal.isChecked()){
-            Riesgo.setText("1");
-            msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
-            msg.setText("Riesgo medio para cuadro grave COVID-19");
-        }
-    }
-
-    public void checkHipertencion(View view){
-        if(paHiper.isChecked()){
-            aumentar();
-            checkRiesgo();
-        }else{
-            disminuir();
-            checkRiesgo();
-        }
-    }
-    public void checkDiabetes(View view){
+    public void checkPadecimientos(){
         if(paDiab.isChecked()){
             aumentar();
-            checkRiesgo();
-        }else{
-            disminuir();
-            checkRiesgo();
+            cont++;
+            etDiabetes.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
         }
-    }
-    public void checkEpoc(View view){
+        if(paHiper.isChecked()){
+            aumentar();
+            cont++;
+            etHiper.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
+        }
         if(paEpoc.isChecked()){
             aumentar();
-            checkRiesgo();
-        }else{
-            disminuir();
-            checkRiesgo();
+            cont++;
+            etEPOC.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
         }
-    }
-    public void checkRenal(View view){
         if(paRen.isChecked()){
             aumentar();
-            checkRiesgo();
-        }else{
-            disminuir();
-            checkRiesgo();
+            cont++;
+            etERC.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
         }
-    }
-    public void checkInmuno(View view){
         if(paInmu.isChecked()){
             aumentar();
-            checkRiesgo();
-        }else{
-            disminuir();
-            checkRiesgo();
+            cont++;
+            etInmuno.setBackground(getResources().getDrawable(R.drawable.etiqueta_activa));
         }
     }
 
@@ -196,17 +394,5 @@ public class MainActivity extends AppCompatActivity {
         String data = (String) Riesgo.getText();
         int vRiesgo = Integer.parseInt(data)-1;
         Riesgo.setText(String.valueOf(vRiesgo));
-    }
-
-    public void checkRiesgo(){
-        String data = (String) Riesgo.getText();
-        int vRiesgo = Integer.parseInt(data);
-        if(vRiesgo > 3){
-            msg.setBackground(getResources().getDrawable(R.drawable.message_alta));
-            msg.setText("Riesgo alto para cuadro grave COVID-19");
-        }else{
-            msg.setBackground(getResources().getDrawable(R.drawable.message_baja));
-            msg.setText("Riesgo medio para cuadro grave COVID-19");
-        }
     }
 }
