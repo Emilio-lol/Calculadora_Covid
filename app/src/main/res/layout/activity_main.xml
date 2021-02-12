@@ -436,39 +436,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/txvHiper" />
 
-                    <TextView
-                        android:id="@+id/txvEPOC"
-                        android:layout_width="183dp"
-                        android:layout_height="25dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="2dp"
-                        android:background="@drawable/etiqueta_pade"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:text="EPOC"
-                        android:textColor="#000000"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.018"
-                        app:layout_constraintStart_toEndOf="@+id/txvHiper"
-                        app:layout_constraintTop_toBottomOf="@+id/txvDiabetes" />
-
-                    <TextView
-                        android:id="@+id/txvInmuno"
-                        android:layout_width="181dp"
-                        android:layout_height="25dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="2dp"
-                        android:background="@drawable/etiqueta_pade"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:text="Inmunosupresión"
-                        android:textColor="#000000"
-                        android:textSize="10sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.071"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/txvERC" />
-
                 </LinearLayout>
 
             </LinearLayout>
